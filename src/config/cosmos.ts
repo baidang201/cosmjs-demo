@@ -1,5 +1,5 @@
 const cosmos ={
-  chainId: "my-test-chain",
+  chainId: "earth-0",
   chainName: "monkey",
   rpc: "http://127.0.0.1:26657",
   rest: "http://127.0.0.1:1317",
@@ -22,23 +22,8 @@ const cosmos ={
       coinGeckoId: "cosmos",
     },
     {
-      coinDenom: "THETA",
-      coinMinimalDenom: "theta",
-      coinDecimals: 0,
-    },
-    {
-      coinDenom: "LAMBDA",
-      coinMinimalDenom: "lambda",
-      coinDecimals: 0,
-    },
-    {
-      coinDenom: "RHO",
-      coinMinimalDenom: "rho",
-      coinDecimals: 0,
-    },
-    {
-      coinDenom: "EPSILON",
-      coinMinimalDenom: "epsilon",
+      coinDenom: "ERT",
+      coinMinimalDenom: "ert",
       coinDecimals: 0,
     },
   ],
@@ -48,6 +33,11 @@ const cosmos ={
       coinMinimalDenom: "stake",
       coinDecimals: 6,
       coinGeckoId: "cosmos",
+      gasPriceStep: {
+        low: 1,
+        average: 1,
+        high: 1,
+      },
     },
   ],
   stakeCurrency: {
@@ -55,12 +45,6 @@ const cosmos ={
     coinMinimalDenom: "stake",
     coinDecimals: 6,
     coinGeckoId: "cosmos",
-  },
-  coinType: 118,
-  gasPriceStep: {
-    low: 1,
-    average: 1,
-    high: 1,
   },
   features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
 }

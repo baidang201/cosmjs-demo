@@ -7,6 +7,8 @@
     "jsx": "react",
     "esModuleInterop": true,
     "allowJs": true,
+    "preserveSymlinks": true,
+    "noEmitHelpers": true,
     "strict": false //严格模式
   }
 }

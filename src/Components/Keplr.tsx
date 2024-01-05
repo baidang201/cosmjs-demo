@@ -1,9 +1,11 @@
 import type { ChainInfo } from "@keplr-wallet/types";
+import type stores from "@keplr-wallet/stores";
 import React, { useEffect, useState } from "react";
 import cosmos from "../config/cosmos";
 import {
  assertIsDeliverTxSuccess, SigningStargateClient
 } from "@cosmjs/stargate";
+import Long from "long";
 
 function Keplr() {
 	const [chain, setChain] = useState<ChainInfo>(cosmos);
@@ -14,6 +16,9 @@ function Keplr() {
 	const [balance, setBalance] = useState<any>();
 	const [recipent, setRecipent] = useState<any>(
 		"cosmos18txc2c9anap2a325lm3a75a2645xjz8lukqtdq"
+	);
+	const [ibcRecipent, setIbcRecipent] = useState<any>(
+		"qHUgFDj9cU9hcGZpyPDVaLVHhf2ojJ5z9VW255XL3gWLqYYCd"
 	);
 	const [tx, setTx] = useState<any>();
 	const [sendHash, setSendHash] = useState<any>();
@@ -51,6 +56,7 @@ function Keplr() {
 	// 余额查询  Todo
 	const getBalances = async () => {
 		if (client) {
+			console.log("### currencies", await client.getAllBalances(address)); 
 			const _balance = await client.getBalance(address, chain.stakeCurrency.coinMinimalDenom);
 		
 			setBalance(_balance);
@@ -95,6 +101,70 @@ function Keplr() {
 				address,
 				recipent,
 				amount,
+				fee,
+				""
+			);
+			assertIsDeliverTxSuccess(result);
+
+			if (result.code == 0) {
+				alert(
+					"transfer success, height:" +
+					result.height +
+					"hash: " +
+					result.transactionHash
+				)
+
+				setTx(result.transactionHash);
+			}
+
+		} catch (e) {
+			console.log(e);
+		}
+	};
+
+	const sendIbcToken = async () => {
+		if (!client || !recipent || !address) {
+			return
+		}
+
+		//const converAmount = (10*1e6).toString();
+		const converAmount = 1000
+		const amount = [
+			{
+				denom: "ert",
+				amount: converAmount.toString(),
+			}
+		]
+
+		const fee = {
+			amount: [
+				{
+					denom: chain.stakeCurrency.coinMinimalDenom,
+					amount: 0.025,
+				},
+			],
+			gas: "2000000"
+		}
+
+		try {
+			console.log(address,
+				ibcRecipent,
+				amount,
+				"transfer",
+				"channel-0",
+				undefined,
+				Math.floor(Date.now() / 1000) + 300, //now + 5 mins
+				fee,
+				"");
+			
+			const result = await client.sendIbcTokens(
+				address,
+				ibcRecipent,
+				amount,
+				"transfer",
+				"channel-0",
+				undefined,
+				Math.floor(Date.now() / 1000) + 300,
 				fee,
 				""
 			);
@@ -168,6 +238,24 @@ function Keplr() {
 					发送 10 {chain.feeCurrencies[0].coinMinimalDenom}
 				</button>
 			</div>
+
+
+			<label>2、sendIbcTokens() & broadcastTx</label>
+			<div>
+				<input
+					type="text"
+					value={ibcRecipent}
+					placeholder="address"
+					style={{ width: "350px" }}
+					onChange={(e) => setIbcRecipent(e.target.value)}
+				/>
+				&nbsp;
+				<button onClick={sendIbcToken}>
+					发送 1000 ert
+				</button>
+			</div>
+
+			
 			<label>2、getTx()</label>
 			<div>
 				<input value={tx} readOnly style={{ width: "350px" }} />
